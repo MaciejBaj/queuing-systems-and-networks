@@ -1,0 +1,7 @@
+E|60|1
+E|120|FIFO|4|2
+E|80|FIFO|4|3
+N|40,60|LIFO|2|END
+
+
+//E / U / N / D - rozkład - wykładniczy, unormowany, normalny, dokładny
