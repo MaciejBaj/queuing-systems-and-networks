@@ -12,6 +12,8 @@
 
 #include "Communicate.h"
 #include "CommunicatesStack.h"
+#include "Statistics.h"
+#include "DestinationMachine.h"
 
 class MachineBlock {
 
@@ -19,7 +21,7 @@ private:
   int _distributionParameter;
   int _queueType;
   int _queueCapacity;
-  vector<Communicate> _queueTasks;
+  list<Communicate> _queueTasks;
   int _outputMachineNumber;
   int _sourceMachineNumber;
   int _machineId;
@@ -40,14 +42,16 @@ public:
   MachineBlock(double (*distribution)(double), int distributionParameter, int queueType, int queueCapacity,
                int outputMachineNumber, int sourceMachineNumber, int machineId);
 
-  CommunicatesStack handleCommunicate(Communicate communicate, CommunicatesStack &stack, vector<MachineBlock> machineBlocks);
+  CommunicatesStack handleCommunicate(Communicate communicate, CommunicatesStack &stack,
+                                      vector<MachineBlock> machineBlocks, Statistics &statistics);
 
 
-  void tryToAccept(Communicate communicate, CommunicatesStack &stack);
+  void tryToAccept(Communicate communicate, CommunicatesStack &stack, Statistics &statistics);
 
-  void tryToFreeChannel(Communicate communicate, CommunicatesStack &stack, vector<MachineBlock> machineBlocks);
+  void tryToFreeChannel(Communicate communicate, CommunicatesStack &stack,
+                                      vector<MachineBlock> machineBlocks, Statistics &statistics);
 
-  void selectNextTask(Communicate communicate, CommunicatesStack &stack);
+  void selectNextTask(Communicate communicate, CommunicatesStack &stack, Statistics &statistics);
 
   bool outputBlockIsFull(vector<MachineBlock> machineBlocks);
 
@@ -57,7 +61,9 @@ public:
 
   void service(Communicate communicate, CommunicatesStack &stack);
 
-  void addToQueue(Communicate communicate, CommunicatesStack &stack);
+  void addToQueue(Communicate communicate, CommunicatesStack &stack, Statistics &statistics);
+
+  MachineBlock();
 };
 
 

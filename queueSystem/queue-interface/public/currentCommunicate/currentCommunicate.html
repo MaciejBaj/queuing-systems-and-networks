@@ -1,0 +1,26 @@
+<h2>aktualny komunikat: </h2>
+<table class="communication-stack" ng-if="currentCommunicateInput">
+  <thead>
+    <tr>
+      <td>id komunikatu</td>
+      <td>czas</td>
+      <td>rodzaj zdarzenia</td>
+      <td>kierunek</td>
+      <td>cel</td>
+    </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td> {{currentCommunicateInput.id}} </td>
+    <td> {{currentCommunicateInput.time}} </td>
+    <td> {{systemConstants.EVENT_NAME[currentCommunicateInput.eventName]}} </td>
+    <td> {{systemConstants.DIRECTION[currentCommunicateInput.direction]}} </td>
+    <td> {{currentCommunicateInput.destination}} </td>
+  </tr>
+  </tbody>
+</table>
+<table ng-if="!currentCommunicateInput">
+  <tr>
+    <td>aktualnie zaden komunikat nie jest obslugiwany</td>
+  </tr>
+</table>

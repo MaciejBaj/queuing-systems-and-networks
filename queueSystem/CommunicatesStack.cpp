@@ -2,7 +2,13 @@
 // Created by maciej on 24.11.15.
 //
 
+#include <iostream>
 #include "CommunicatesStack.h"
+
+bool compareCommunicateTimes (Communicate& first, Communicate& second)
+{
+  return first.getTime() > second.getTime();
+}
 
 
 CommunicatesStack::CommunicatesStack() {
@@ -11,7 +17,8 @@ CommunicatesStack::CommunicatesStack() {
 
 void CommunicatesStack::add(Communicate communicate) {
   _communicatesStack.push_back(communicate);
-  //ToDo: sort stack
+  _communicatesStack.sort(compareCommunicateTimes);
+  cout << "{ 'messageType': 'newCommunicate', " << communicate.toString() << "}," << endl;
 }
 
 Communicate CommunicatesStack::getCurrentCommunicate() {
@@ -23,3 +30,4 @@ Communicate CommunicatesStack::getCurrentCommunicate() {
 bool CommunicatesStack::communicatesExists() {
   return !_communicatesStack.empty();
 }
+

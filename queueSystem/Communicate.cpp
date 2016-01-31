@@ -2,6 +2,7 @@
 // Created by maciej on 24.11.15.
 //
 
+#include <sstream>
 #include "Communicate.h"
 
 
@@ -11,7 +12,6 @@ Communicate::Communicate(int id, double time, int eventName, int direction, int 
   _eventName = eventName;
   _direction = direction;
   _destination = destination;
-
 }
 
 int Communicate::getDestination() {
@@ -32,4 +32,11 @@ int Communicate::getEventName() {
 
 int Communicate::getId() {
   return _id;
+}
+
+string Communicate::toString() {
+
+  ostringstream oss;
+  oss << "'id': " << _id << ", 'time': " << _time << ", 'eventName': " << _eventName << ", 'direction': " << _direction << ", 'destination': " << _destination;
+  return  oss.str();
 }

@@ -1,0 +1,67 @@
+<md-card style=" text-align: center;">
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">Queue system configuration</span>
+        </md-card-title-text>
+    </md-card-title>
+
+    <md-card-content >
+        <div layout="row" >
+            <md-input-container>
+                <label>arrival distribution</label>
+                <md-select ng-model="configuration.arrivalDistribution.type">
+                    <md-option ng-repeat="distribution in SELECTABLE_OPTIONS.DISTRIBUTION" value="{{$index}}">
+                        {{distribution}}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+            <md-input-container>
+                <label>arrival distribution parameter</label>
+                <input ng-model="configuration.arrivalDistribution.parameter" type="number">
+            </md-input-container>
+        </div>
+
+        <div ng-repeat="machineBlock in configuration.machineBlocks track by $index"  layout="row" layout-align="space-between">
+            <md-input-container>
+                <label>distribution</label>
+                <md-select ng-model="machineBlock.distribution">
+                    <md-option ng-repeat="distribution in SELECTABLE_OPTIONS.DISTRIBUTION" value="{{$index}}">
+                        {{distribution}}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+            <md-input-container>
+                <label>distribution parameter</label>
+                <input ng-model="machineBlock.distributionParameter" type="number">
+            </md-input-container>
+            <md-input-container>
+                <label>queue</label>
+                <md-select ng-model="machineBlock.queueType">
+                    <md-option ng-repeat="queue in SELECTABLE_OPTIONS.QUEUE_TYPE" value="{{$index}}">
+                        {{queue}}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+            <md-input-container>
+                <label>queue capacity</label>
+                <input ng-model="machineBlock.queueCapacity" type="number">
+            </md-input-container>
+            <md-input-container>
+                <label>outputMachineNumber</label>
+                <input ng-model="machineBlock.outputMachineNumber" type="number">
+            </md-input-container>
+            <md-input-container>
+                <label>sourceMachineNumber</label>
+                <input ng-model="machineBlock.sourceMachineNumber" type="number">
+            </md-input-container>
+            <md-input-container>
+                <label>id</label>
+                <input ng-model="machineBlock.id" type="number">
+            </md-input-container>
+        </div>
+        <md-card-actions layout="row">
+            <md-button class="md-raised md-primary" ng-click="addNewMachineBlock()">+</md-button>
+            <md-button class="md-raised md-error" ng-click="removeMachineBlock()">-</md-button>
+        </md-card-actions>
+    </md-card-content>
+</md-card>

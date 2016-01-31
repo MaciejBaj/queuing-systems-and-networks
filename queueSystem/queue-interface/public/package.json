@@ -1,0 +1,19 @@
+{
+  "jspm": {
+    "directories": {},
+    "dependencies": {
+      "angular": "github:angular/bower-angular@^1.4.9",
+      "angular-animate": "github:angular/bower-angular-animate@^1.4.9",
+      "angular-aria": "github:angular/bower-angular-aria@^1.4.9",
+      "angular-material": "github:angular/bower-material@^1.0.4",
+      "c3": "npm:c3@^0.4.11-rc4",
+      "d3": "github:mbostock/d3@^3.5.14",
+      "lodash": "npm:lodash@^4.1.0"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.1.13",
+      "babel-runtime": "npm:babel-runtime@^5.1.13",
+      "core-js": "npm:core-js@^0.9.4"
+    }
+  }
+}

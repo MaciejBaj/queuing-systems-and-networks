@@ -7,16 +7,14 @@
 
 
 #include "Communicate.h"
-#include <vector>
+#include <list>
 
 using namespace std;
 
 class CommunicatesStack {
 
 private:
-  vector<Communicate> _communicatesStack;
-
-  void _eventAppearedCallback(Communicate);
+  list<Communicate> _communicatesStack;
 
 public:
   CommunicatesStack();

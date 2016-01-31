@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <link rel="stylesheet" type="text/css" href="jspm_packages/github/angular/bower-material@1.0.4/angular-material.min.css">
+  <link rel="stylesheet" type="text/css" href="jspm_packages/npm/c3@0.4.11-rc4/c3.css">
+
+  <script src="jspm_packages/system.js"></script>
+  <script src="config.js"></script>
+  <script>
+    System.import('main');
+  </script>
+
+  <!--<script src="bower_components/angular/angular.js"></script>-->
+  <!--<script src="bower_components/jquery/dist/jquery.js"></script>-->
+  <!--<script src="bower_components/angular-aria/angular-aria.min.js"></script>-->
+
+  <!--<script src="bower_components/angular-animate/angular-animate.min.js"></script>-->
+  <!--<script src="bower_components/lodash/lodash.js"></script>-->
+  <!--<script src="bower_components/angular-material/angular-material.min.js"></script>-->
+  <!--<script src="bower_components/c3/c3.min.js"></script>-->
+  <!--<script src="bower_components/d3/d3.min.js"></script>-->
+
+
+    <!--<script src="app.js"></script>-->
+    <meta charset="UTF-8">
+    <title></title>
+    <title></title>
+</head>
+<body>
+ <div ng-controller="queueSystem" class="main-container">
+   <configuration-panel configuration="configuration"></configuration-panel>
+   <h1>SYMULACJA</h1>
+   <div class="simulation-navbar">
+     <span class="md-body-1">speed</span>
+     <md-slider flex class="md-primary" md-discrete ng-model="speed" step="1" min="1" max="5" aria-label="rating"></md-slider>
+     <md-button class="md-primary md-raised start-button" ng-click="start()">start</md-button>
+   </div>
+
+   <system-watch time="actualTime"></system-watch>
+   <current-communicate current-communicate-input="currentCommunicate" communicate-candidate="currentMessage"></current-communicate>
+   <communication-stack current-communicate-input="currentCommunicate" communicate-candidate="currentMessage"></communication-stack>
+
+   <div class="machine-park">
+     <md-content>
+       <md-grid-list md-cols="2" md-row-height="4:3" md-gutter="8px" >
+         <md-grid-tile ng-repeat="machineBlock in machineBlocks">
+           <machine-block model="machineBlock" current-communicate-input="currentCommunicate"></machine-block>
+         </md-grid-tile>
+       </md-grid-list>
+     </md-content>
+   </div>
+
+   <line-chart current-message="currentMessage" message-type="averageServiceTime"></line-chart>
+   <line-chart current-message="currentMessage" message-type="varianceServiceTime"></line-chart>
+   <line-chart current-message="currentMessage" message-type="standardDeviationServiceTime"></line-chart>
+
+   <line-chart current-message="currentMessage" message-type="averageQueueLength"></line-chart>
+
+   <line-chart current-message="currentMessage" message-type="averageWaitingTime"></line-chart>
+   <line-chart current-message="currentMessage" message-type="varianceWaitingTime"></line-chart>
+   <line-chart current-message="currentMessage" message-type="standardDeviationWaitingTime"></line-chart>
+
+
+ </div>
+</body>
+
+<script>
+</script>
+</html>

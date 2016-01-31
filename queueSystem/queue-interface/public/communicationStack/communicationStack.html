@@ -1,0 +1,26 @@
+<h2> stos komunikatów: </h2>
+<table class="communication-stack" ng-if="communicationStack && communicationStack.length">
+  <thead>
+    <tr>
+      <td>id maszyny</td>
+      <td>czas</td>
+      <td>rodzaj zdarzenia</td>
+      <td>kierunek</td>
+      <td>cel</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="communicate in communicationStack">
+      <td> {{communicate.id}} </td>
+      <td> {{communicate.time}} </td>
+      <td> {{systemConstants.EVENT_NAME[communicate.eventName]}} </td>
+      <td> {{systemConstants.DIRECTION[communicate.direction]}} </td>
+      <td> {{communicate.destination}} </td>
+    </tr>
+  </tbody>
+</table>
+<table ng-if="!communicationStack|| (communicationStack && communicationStack.length === 0)">
+  <tr>
+    <td>brak oczekujących komunikatów na stosie</td>
+  </tr>
+</table>

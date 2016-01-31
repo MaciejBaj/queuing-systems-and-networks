@@ -1,0 +1,52 @@
+h2 {
+  color:#678197;
+  text-align: center;
+}
+table {
+  width:90%;
+  border-top:1px solid #e5eff8;
+  border-right:1px solid #e5eff8;
+  margin:1em auto;
+  border-collapse:collapse;
+}
+td, th {
+  color:#678197;
+  border-bottom:1px solid #e5eff8;
+  border-left:1px solid #e5eff8;
+  padding:.3em 1em;
+  text-align:center;
+}
+
+.main-container {
+  text-align: center;
+}
+
+.machine-block {
+  text-align: center;
+  /*height: 700px;*/
+}
+.machine-block > md-content{
+  /*height: 100%;*/
+}
+.queue-place {
+  padding: 1em;
+  background: grey;
+  border-style: solid;
+}
+
+.channel {
+  padding: 2em;
+  background: dodgerblue;
+  border-style: solid;
+
+}
+.simulation-navbar {
+  display: flex;
+}
+
+.free {
+  color: green;
+}
+.taken {
+  color: red;
+}

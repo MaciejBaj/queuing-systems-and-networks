@@ -4,8 +4,12 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <list>
+#include <vector>
 #include "MachineBlock.h"
 #include "CommunicatesStack.h"
+#include "Statistics.h"
+#include "DestinationMachine.h"
 
 #define FIFO 0
 #define LIFO 1
@@ -24,6 +28,7 @@
 
 using namespace std;
 
+
 MachineBlock::MachineBlock(double (*distribution)(double), int distributionParameter, int queueType, int queueCapacity,
                            int outputMachineNumber, int sourceMachineNumber, int machineId) {
   _distribution = distribution;
@@ -33,17 +38,17 @@ MachineBlock::MachineBlock(double (*distribution)(double), int distributionParam
   _outputMachineNumber = outputMachineNumber;
   _sourceMachineNumber = sourceMachineNumber;
   _machineId = machineId;
-
 }
 
-CommunicatesStack MachineBlock::handleCommunicate(Communicate communicate, CommunicatesStack &stack, vector<MachineBlock> machineBlocks) {
+CommunicatesStack MachineBlock::handleCommunicate(Communicate communicate, CommunicatesStack &stack,
+                                    vector<MachineBlock> machineBlocks, Statistics &statistics) {
   totalCounter++;
 
   switch (communicate.getEventName()) {
     case BLOCK:
       switch (communicate.getDirection()) {
         case IN:
-          tryToAccept(communicate, stack);
+          tryToAccept(communicate, stack, statistics);
           break;
         case OUT:
           if(_queueLength > 0) {
@@ -58,7 +63,7 @@ CommunicatesStack MachineBlock::handleCommunicate(Communicate communicate, Commu
           service(communicate, stack);
           break;
         case OUT:
-          tryToFreeChannel(communicate, stack, machineBlocks);
+          tryToFreeChannel(communicate, stack, machineBlocks, statistics);
           break;
         default:break;
       }
@@ -66,10 +71,10 @@ CommunicatesStack MachineBlock::handleCommunicate(Communicate communicate, Commu
     case QUEUE:
       switch (communicate.getDirection()) {
         case IN:
-          addToQueue(communicate, stack);
+          addToQueue(communicate, stack, statistics);
           break;
         case OUT:
-          selectNextTask(communicate, stack);
+          selectNextTask(communicate, stack, statistics);
           break;
         default:break;
       }
@@ -83,24 +88,30 @@ CommunicatesStack MachineBlock::handleCommunicate(Communicate communicate, Commu
 
 }
 
-void MachineBlock::tryToAccept(Communicate communicate, CommunicatesStack &stack) {
+void MachineBlock::tryToAccept(Communicate communicate, CommunicatesStack &stack, Statistics &statistics) {
+  statistics.numberAllVisits++;
   if (_channelState == FREE) {
     _channelState = WORKING;
     _channelStateChangedTime = communicate.getTime();
     stack.add(Communicate(communicate.getId(), _channelStateChangedTime, MACHINE, IN, _machineId));
+//    statistics.updateWaitingTime(0.0);
+//    statistics.numberWaited ++;
   }
   else if (_queueLength < _queueCapacity) {
     stack.add(Communicate(communicate.getId(), communicate.getTime(), QUEUE, IN, _machineId));
   }
   else {
     //nieobsluzone- brak miejsc
-    notServicedCounter  += 1;
+    statistics.numberAllVisits--;
+    statistics.notServiced++;
+    notServicedCounter += 1;
   }
 }
 
-void MachineBlock::tryToFreeChannel(Communicate communicate, CommunicatesStack &stack, vector<MachineBlock> machineBlocks) {
+void MachineBlock::tryToFreeChannel(Communicate communicate, CommunicatesStack &stack,
+                                    vector<MachineBlock> machineBlocks, Statistics &statistics) {
   if(_channelState == FREE) {
-    cout << "unnecessary broadcast received from output machine " << endl;
+    cout << "{'additionalInfo': 'unnecessary broadcast received from output machine'}, " << endl;
   }
   if(outputBlockIsFull(machineBlocks)) {
     _channelStateChangedTime = communicate.getTime();
@@ -109,24 +120,25 @@ void MachineBlock::tryToFreeChannel(Communicate communicate, CommunicatesStack &
   }
   else if (_channelState == BLOCKED) {
     double blockedTime = communicate.getTime() - _channelStateChangedTime;
-    cout << "time task was blocked on machine:" << blockedTime << endl;
+    cout << "{'additionalInfo': 'time task was blocked on machine: " << blockedTime << "'}," << endl;
   }
   _channelState = FREE;
-  _channelStateChangedTime = communicate.getTime();
   stack.add(Communicate(communicate.getId(), communicate.getTime(), BLOCK, OUT, _machineId));
   stack.add(Communicate(communicate.getId(), communicate.getTime(), BLOCK, IN, _outputMachineNumber));
+  statistics.updateAverageServiceTime(communicate.getTime() - _channelStateChangedTime);
+  _channelStateChangedTime = communicate.getTime();
 
 }
 
-void MachineBlock::selectNextTask(Communicate communicate, CommunicatesStack &stack) {
+void MachineBlock::selectNextTask(Communicate communicate, CommunicatesStack &stack, Statistics &statistics) {
   Communicate selectedTask = selectTaskFromQueue();
   if(_queueLength == _queueCapacity) {
     auto notifyBlockListeners = Communicate(selectedTask.getId(), communicate.getTime(), MACHINE, OUT, _sourceMachineNumber);
     stack.add(notifyBlockListeners);
   }
   _queueLength -= 1;
-  cout << "time task was waiting in queue" << communicate.getTime() - selectedTask.getTime() << endl;
   stack.add(Communicate(selectedTask.getId(), communicate.getTime(), MACHINE, IN, _machineId));
+  statistics.updateWaitingTime(communicate.getTime() - selectedTask.getTime());
 }
 
 
@@ -135,19 +147,21 @@ void MachineBlock::service(Communicate communicate, CommunicatesStack &stack) {
   double serviceTime = _distribution(_distributionParameter);
   summaricServiceTime += serviceTime;
   servicedCounter++;
-  _channelStateChangedTime += serviceTime;
+//  _channelStateChangedTime += serviceTime;
   stack.add(Communicate(communicate.getId(), communicate.getTime() + serviceTime, MACHINE, OUT, _machineId));
 }
 
-void MachineBlock::addToQueue(Communicate communicate, CommunicatesStack &stack) {
+void MachineBlock::addToQueue(Communicate communicate, CommunicatesStack &stack, Statistics &statistics) {
   _queueLength += 1;
   _queueTasks.push_back(communicate);
+  statistics.numberWaited ++;
 }
 
-
 bool MachineBlock::outputBlockIsFull(vector<MachineBlock> machineBlocks) {
-  auto outputMachineBlock = machineBlocks[_outputMachineNumber];
-  return outputMachineBlock.isFull();
+  if(_outputMachineNumber == END) {
+    return false;
+  }
+  return  machineBlocks[_outputMachineNumber].isFull();
 }
 
 bool MachineBlock::isFull() {
@@ -155,7 +169,22 @@ bool MachineBlock::isFull() {
 }
 
 Communicate MachineBlock::selectTaskFromQueue() {
-  auto selectedTask =  _queueTasks.back();
-  _queueTasks.pop_back();
-  return selectedTask;
+  if(_queueType == LIFO) {
+    auto selectedTask =  _queueTasks.front();
+    _queueTasks.pop_front();
+    return selectedTask;
+  }
+  else if (_queueType == FIFO) {
+    auto selectedTask =  _queueTasks.back();
+    _queueTasks.pop_back();
+    return selectedTask;
+  }
+  else {
+    throw invalid_argument("{'error': unknow queue type}");
+  }
+
+}
+
+MachineBlock::MachineBlock() {
+
 }

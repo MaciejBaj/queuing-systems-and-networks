@@ -1,0 +1,7 @@
+<div class="machine-block">
+  <pre >maszyna: {{model.id}}, pojemność kolejki: {{model.queueLength}}</pre>
+  <div class="queue">
+    <div class="queue-place" ng-repeat="place in model.queuePlaces track by $index"  ng-class="place.free ? 'free' : 'taken'">Q</div>
+  </div>
+  <div class="channel" ng-class="model.channelFree ? 'free' : 'taken'">C</div>
+</div>
